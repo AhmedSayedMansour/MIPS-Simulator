@@ -93,7 +93,6 @@ public class AssemblerGui extends javax.swing.JFrame {
         }
         else{
             JOptionPane.showMessageDialog(null, "Syntax error");
-            System.out.println("mmmmmmmmmmm");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

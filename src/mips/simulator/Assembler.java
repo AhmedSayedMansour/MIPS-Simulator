@@ -135,6 +135,9 @@ public class Assembler {
                 if(code[i].length() == 1 && code[i].charAt(code[i].length()-1) == ':'){
                     Labels.put(code[i], i+2);
                 }
+                else{
+                    return false;
+                }
             }
             else{
                 return false;
