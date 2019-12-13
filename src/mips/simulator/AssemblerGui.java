@@ -5,13 +5,15 @@
  */
 package mips.simulator;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author ahmed
  */
 public class AssemblerGui extends javax.swing.JFrame {
 
-    Assembler object ;
+    Assembler object = new Assembler();
     public AssemblerGui() {
         initComponents();
     }
@@ -86,8 +88,13 @@ public class AssemblerGui extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        object = new Assembler(Code.getText());
-        
+        if(object.CheckAndAdd(Code.getText())){
+            
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Syntax error");
+            System.out.println("mmmmmmmmmmm");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

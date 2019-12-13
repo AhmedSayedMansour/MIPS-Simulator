@@ -29,7 +29,7 @@ public class Assembler {
         }
     }
 
-    public Assembler(String code) {
+    public Assembler() {
         //Adding all opcodes
         opCodes.put("lw", "100011");   opCodes.put("sw","101011" );   opCodes.put("addi", "001000");  opCodes.put("andi", "001100");   opCodes.put("ori", "001101");
         opCodes.put("slti", "001010");   opCodes.put("lui", "001111");  opCodes.put("beq", "000100");   opCodes.put("bne", "000101");   opCodes.put("add", "000000");
@@ -104,15 +104,17 @@ public class Assembler {
                     //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),3)));
                     return 3;
                 }
+                else{
+                    return -1;
+                }
             default:
                 return 0;
         }
     }
 
     public Boolean CheckAndAdd(String full) {
-        sets = full.split("\n");
-        CheckAndAdd(full);
-        String []code = full.split("\n");
+        sets = full.split(System.getProperty("line.separator"));
+        String []code = full.split(System.getProperty("line.separator"));
         for(int i=0; i < code.length;++i){
             if (checkValidation(code[i]) > 0) {
                 code[i] = code[i].replaceAll(",", " ");
@@ -130,7 +132,12 @@ public class Assembler {
                 }
             }
             else if(checkValidation(code[i]) == 0){    //not a code may be label
-
+                if(code[i].length() == 1 && code[i].charAt(code[i].length()-1) == ':'){
+                    Labels.put(code[i], i+2);
+                }
+            }
+            else{
+                return false;
             }
         }
         return true;
