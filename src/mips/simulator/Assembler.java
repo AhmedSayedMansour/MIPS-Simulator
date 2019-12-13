@@ -18,12 +18,12 @@ public class Assembler {
 
         public Character type;
         public String hexaCode;
-        public String[] fields;
+        public ArrayList<String> fields = new ArrayList<>();
         ArrayList<String> Binary;
 
         public MachineSet(Character type, String data, String hexa, ArrayList<String> bin) {
             this.type = type;
-            fields = data.split(" ");
+            fields.add(data);
             hexaCode = hexa;
             Binary = bin;
         }
@@ -48,7 +48,6 @@ public class Assembler {
             case "sw":
             case "lui":
                 if (elements.length == 3 && Resgisters.contains(elements[1])) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),1)));
                     return 1;
                 }
                 else{
@@ -61,7 +60,6 @@ public class Assembler {
             case "beq":
             case "bne":
                 if (elements.length == 4 && Resgisters.contains(elements[1]) && Resgisters.contains(elements[2])) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),1)));
                     return 1;
                 }
                 else{
@@ -75,7 +73,6 @@ public class Assembler {
             case "or":
             case "slt":
                 if (elements.length == 4 && Resgisters.contains(elements[1]) && Resgisters.contains(elements[2]) && Resgisters.contains(elements[3])) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),1)));
                     return 2;
                 }
                 else{
@@ -83,15 +80,12 @@ public class Assembler {
                 }
             case "sll":
                 if (elements.length == 4 && Resgisters.contains(elements[1]) && Resgisters.contains(elements[2])) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),1)));
-                    return 1;
                 }
                 else{
                     return -1;
                 }
             case "jr":
                 if (elements.length == 2 && Resgisters.contains(elements[1])) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),1)));
                     return 2;
                 }
                 else{
@@ -101,7 +95,6 @@ public class Assembler {
             //J-type: 
             case "j":
                 if (elements.length == 2) {
-                    //Instructions.add(new MachineSet('J', code, tohexa(code.split(" ")), toBinary(code.split(" "),3)));
                     return 3;
                 }
                 else{
@@ -113,12 +106,13 @@ public class Assembler {
     }
 
     public Boolean CheckAndAdd(String full) {
-        sets = full.split(System.getProperty("line.separator"));
-        String []code = full.split(System.getProperty("line.separator"));
+        sets = full.split("\\n");
+        String []code = full.split("\\n");
         for(int i=0; i < code.length;++i){
+            code[i] = code[i].replaceAll(",", " ");
+            code[i] = code[i].replaceAll(" +", " ");
+            System.out.println(code[i]);
             if (checkValidation(code[i]) > 0) {
-                code[i] = code[i].replaceAll(",", " ");
-                code[i] = code[i].replaceAll(" +", " ");
                 switch (checkValidation(code[i])) {
                     case 1:
                         Instructions.add(new MachineSet('I', code[i], toHexa(toBinary(code[i].split(" "),1)), toBinary(code[i].split(" "),1)));
@@ -132,17 +126,21 @@ public class Assembler {
                 }
             }
             else if(checkValidation(code[i]) == 0){    //not a code may be label
-                if(code[i].length() == 1 && code[i].charAt(code[i].length()-1) == ':'){
+                if((!code[i].contains(" ")) && code[i].charAt(code[i].length()-1) == ':'){
                     Labels.put(code[i], i+2);
+                    Instructions.add(new MachineSet('L', code[i], "0x00000000", toBinary(code[i].split(" "),4)));
                 }
                 else{
+                    System.out.println("555555"+code[i]+"............");
                     return false;
                 }
             }
             else{
+                System.out.println("44444444"+code[i]+".............");
                 return false;
             }
         }
+        System.out.println("**************");
         return true;
     }
 
@@ -170,22 +168,22 @@ public class Assembler {
         ArrayList<String> s = new ArrayList<>();
         if (i == 1) {   //I-type
             s.add(opCodes.get(code[0]));  //op
-            if(code[0] == "lw" || code[0] == "sw"){
+            if(code[0].equals("lw") || code[0].equals("sw")){
                 code[3].replaceAll(")", "");
                 String[] arr = code[3].split("(");
                 s.add(binaryFromInt(Resgisters.indexOf(arr[1]) , 5));  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rt
                 s.add(binaryFromInt(Integer.parseInt(arr[0]) , 16));  //immediate
             }
-            else if(code[0] == "lui"){
+            else if(code[0].equals("lui")){
                 s.add("00000");  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rt
                 s.add(binaryFromInt(Integer.parseInt(code[2]) , 16));  //immediate
             }
-            else if(code[0] == "beq" || code[0] == "bne"){
+            else if(code[0].equals("beq") || code[0].equals("bne")){
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[2]) , 5));  //rt
-                s.add(binaryFromInt(Integer.parseInt(code[2]) , 16));  //immediate      /***TODO***/
+                s.add(binaryFromInt(0 , 16));  //immediate      /***TODO***/
             }
             else{
                 s.add(binaryFromInt(Resgisters.indexOf(code[2]) , 5));  //rs
@@ -195,14 +193,14 @@ public class Assembler {
         }
         else if (i == 2) {  //R-type
             s.add("000000");  //op
-            if(code[0] == "sll" ){
+            if(code[0].equals("sll") ){
                 s.add("00000");  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[2]) , 5));  //rt
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rd
                 s.add(binaryFromInt(Integer.parseInt(code[3]) , 5));  //shamt
                 s.add("000000");  //funct
             }
-            else if(code[0] == "jr"){
+            else if(code[0].equals("jr")){
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rs
                 s.add("00000");  //rt
                 s.add("00000");  //rd
@@ -214,16 +212,19 @@ public class Assembler {
                 s.add(binaryFromInt(Resgisters.indexOf(code[3]) , 5));  //rt
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rd
                 s.add("00000");  //shamt
-                if (code[0] == "add")   s.add(binaryFromInt(32 , 6));  //funct
-                if (code[0] == "sub")   s.add(binaryFromInt(34 , 6));  //funct
-                if (code[0] == "and")   s.add(binaryFromInt(36 , 6));  //funct
-                if (code[0] == "or")   s.add(binaryFromInt(37 , 6));  //funct
-                if (code[0] == "slt")   s.add(binaryFromInt(42 , 6));  //funct
+                if (code[0].equals("add"))   s.add(binaryFromInt(32 , 6));  //funct
+                if (code[0].equals("sub"))   s.add(binaryFromInt(34 , 6));  //funct
+                if (code[0].equals("and"))   s.add(binaryFromInt(36 , 6));  //funct
+                if (code[0].equals("or"))   s.add(binaryFromInt(37 , 6));  //funct
+                if (code[0].equals("slt"))   s.add(binaryFromInt(42 , 6));  //funct
             }
         }
         else if (i == 3) {  //J-type
             s.add("000010");    //Op
-            s.add(binaryFromInt(Integer.parseInt(code[1]) , 26));          //addr      /***TODO***/
+            s.add(binaryFromInt(0 , 26));          //addr      /***TODO***/
+        }
+        else{
+            s.add(binaryFromInt(0 , 32));
         }
         return s;
     }
