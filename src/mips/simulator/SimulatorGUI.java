@@ -5,12 +5,12 @@
  */
 package mips.simulator;
 
+import static mips.simulator.AssemblerGui.obj;
+
 
 public class SimulatorGUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Simulator_GUI
-     */
+    Simulator sim = new Simulator(obj);
     public SimulatorGUI() {
         initComponents();
     }

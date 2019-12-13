@@ -18,12 +18,12 @@ public class Assembler {
 
         public Character type;
         public String hexaCode;
-        public ArrayList<String> fields = new ArrayList<>();
+        public String[] fields ;
         ArrayList<String> Binary;
 
         public MachineSet(Character type, String data, String hexa, ArrayList<String> bin) {
             this.type = type;
-            fields.add(data);
+            fields = data.split(" ");
             hexaCode = hexa;
             Binary = bin;
         }
@@ -111,7 +111,6 @@ public class Assembler {
         for(int i=0; i < code.length;++i){
             code[i] = code[i].replaceAll(",", " ");
             code[i] = code[i].replaceAll(" +", " ");
-            System.out.println(code[i]);
             if (checkValidation(code[i]) > 0) {
                 switch (checkValidation(code[i])) {
                     case 1:
@@ -131,16 +130,13 @@ public class Assembler {
                     Instructions.add(new MachineSet('L', code[i], "0x00000000", toBinary(code[i].split(" "),4)));
                 }
                 else{
-                    System.out.println("555555"+code[i]+"............");
                     return false;
                 }
             }
             else{
-                System.out.println("44444444"+code[i]+".............");
                 return false;
             }
         }
-        System.out.println("**************");
         return true;
     }
 
@@ -183,7 +179,7 @@ public class Assembler {
             else if(code[0].equals("beq") || code[0].equals("bne")){
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[2]) , 5));  //rt
-                s.add(binaryFromInt(0 , 16));  //immediate      /***TODO***/
+                s.add(binaryFromInt(0 , 16));  //immediate              /***TODO***/
             }
             else{
                 s.add(binaryFromInt(Resgisters.indexOf(code[2]) , 5));  //rs

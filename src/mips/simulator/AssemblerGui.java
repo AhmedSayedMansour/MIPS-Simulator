@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
  */
 public class AssemblerGui extends javax.swing.JFrame {
 
-    Assembler object = new Assembler();
+    static Assembler obj = new Assembler();
     public AssemblerGui() {
         initComponents();
     }
@@ -89,7 +89,7 @@ public class AssemblerGui extends javax.swing.JFrame {
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
         // TODO add your handling code here:
-        if(object.CheckAndAdd(Code.getText())){
+        if(obj.CheckAndAdd(Code.getText())){
             new SimulatorGUI().setVisible(true);
             this.setVisible(false);
         }
