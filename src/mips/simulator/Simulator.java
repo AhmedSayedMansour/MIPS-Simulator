@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Simulator {
-    Assembler AssemblerObject ;
+    Assembler AssemblerObject = new Assembler() ;
     HashMap<String, Integer> Rejesters = new HashMap<>();   //rejesters and its values
     HashMap<String, Integer> Memories = new HashMap<>();    //Used memories
+    int pointer = 0 ;
+    int maxPointer = AssemblerObject.Instructions.size(); 
     
     public Simulator(Assembler obj){
         AssemblerObject = obj;
+        //filling registers
         Rejesters.put("$0",   0);   Rejesters.put("$at", 0  );   Rejesters.put("$v0", 0);   Rejesters.put("$v1", 0);    Rejesters.put("$a0", 0);
         Rejesters.put("$a1",  0);   Rejesters.put("$a2", 0  );   Rejesters.put("$a3", 0);   Rejesters.put("$t0", 0);    Rejesters.put("$t1", 0);
         Rejesters.put("$t2",  0);   Rejesters.put("$t3", 0  );   Rejesters.put("$t4", 0 );  Rejesters.put("$t5", 0 );   Rejesters.put("$t6", 0);
