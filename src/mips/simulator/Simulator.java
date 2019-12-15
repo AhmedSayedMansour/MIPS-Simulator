@@ -1,4 +1,4 @@
-package mips.simulator;
+package com.company;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,13 +22,13 @@ public class Simulator {
         //fill kernel set
         kernelSet = kernel(obj);
     }
-    
+
     public ArrayList<Assembler.MachineSet> kernel(Assembler obj){
         ArrayList<Assembler.MachineSet> ins = new ArrayList<Assembler.MachineSet>();
         for (int i=0; i<obj.Instructions.size(); i++){
             if(obj.Instructions.get(i).fields[0]=="beq"){///if beq
-               int rs =  Rejesters.get(obj.Instructions.get(i).fields[1]);
-               int rd =  Rejesters.get(obj.Instructions.get(i).fields[2]);
+                int rs =  Rejesters.get(obj.Instructions.get(i).fields[1]);
+                int rd =  Rejesters.get(obj.Instructions.get(i).fields[2]);
                 if (rs==rd){
                     if (obj.Labels.get(obj.Instructions.get(i).fields[3])>obj.Instructions.size())break;
                     else i = obj.Labels.get(obj.Instructions.get(i).fields[3])-1;
@@ -43,6 +43,9 @@ public class Simulator {
             }else if(obj.Instructions.get(i).fields[0]=="j"){
                 if (obj.Labels.get(obj.Instructions.get(i).fields[1])>obj.Instructions.size())break;
                 else i = obj.Labels.get(obj.Instructions.get(i).fields[1])-1;
+            }else if (obj.Instructions.get(i).fields[0]=="jr"){
+                if (Rejesters.get(obj.Instructions.get(i).fields[3])>obj.Instructions.size())break;
+                else i = obj.Labels.get(obj.Instructions.get(i).fields[3])-1;
             }
             else{
                 if (obj.Instructions.get(i).fields[0]=="add"){
@@ -98,9 +101,9 @@ public class Simulator {
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     if (tmp1<tmp2)
-                    Rejesters.put(obj.Instructions.get(i).fields[1],1);
+                        Rejesters.put(obj.Instructions.get(i).fields[1],1);
                     else
-                    Rejesters.put(obj.Instructions.get(i).fields[1],0);
+                        Rejesters.put(obj.Instructions.get(i).fields[1],0);
                 }
                 if (obj.Instructions.get(i).fields[0]=="slt"){
                     ins.add(obj.Instructions.get(i));
@@ -117,7 +120,7 @@ public class Simulator {
         }
         return ins;
     }
-    
+
     public void clearRejesters(){
         Rejesters.clear();
         Rejesters.put("$0",   0);   Rejesters.put("$at", 0  );   Rejesters.put("$v0", 0);   Rejesters.put("$v1", 0);    Rejesters.put("$a0", 0);
