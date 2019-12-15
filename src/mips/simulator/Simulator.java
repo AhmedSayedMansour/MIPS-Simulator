@@ -131,4 +131,3 @@ public class Simulator {
         Rejesters.put("$t9",  0);   Rejesters.put("$k0", 0  );   Rejesters.put("$k1", 0 );  Rejesters.put("$gp", 0 );   Rejesters.put("$sp", 0);
         Rejesters.put("$fp",  0);   Rejesters.put("$ra", 0  );
     }
-}

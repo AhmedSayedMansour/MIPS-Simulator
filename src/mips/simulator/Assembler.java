@@ -126,7 +126,7 @@ public class Assembler {
             }
             else if(checkValidation(code[i]) == 0){    //not a code may be label
                 if((!code[i].contains(" ")) && code[i].charAt(code[i].length()-1) == ':'){
-                    Labels.put(code[i], i+2);
+                    Labels.put(code[i].substring(0, code[i].length()-1), i+1);
                     Instructions.add(new MachineSet('L', code[i], "0x00000000", toBinary(code[i].split(" "),4)));
                 }
                 else{
@@ -148,6 +148,17 @@ public class Assembler {
         Long decimal=Long.parseLong(binary,2);
         String hexa = "0x" + Long.toHexString(decimal);
 
+        return hexa;
+    }
+    
+    public String Decimalto8Hexa(int Decimal){
+        String hexa = Integer.toHexString(Decimal);
+        while(hexa.length() < 8)
+        {
+           hexa = "0"+ hexa;
+        }
+        hexa = "0x" + hexa;
+        
         return hexa;
     }
 

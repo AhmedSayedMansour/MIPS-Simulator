@@ -27,7 +27,12 @@ public class SimulatorGUI extends javax.swing.JFrame {
         }
         //fill kernel segment
         for (int i = 0; i<sim.kernelSet.size(); i++) {
-            textKernel.setText( textKernel.getText()+ "\n"+sim.kernelSet.get(i));
+            String line = "";
+            for(int j=0 ; j<sim.kernelSet.get(i).fields.length ; j++)
+            {
+                line += sim.kernelSet.get(i).fields[j] + " ";
+            }
+            textKernel.setText( textKernel.getText() + line+ "\n");
         }
     }
     
@@ -102,12 +107,13 @@ public class SimulatorGUI extends javax.swing.JFrame {
             tableRegisters.getColumnModel().getColumn(2).setResizable(false);
         }
 
+        tableMemory.setAutoCreateRowSorter(true);
         tableMemory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Location", "Content", "HexaCdoe"
+                "Location", "Content", "HexaCode"
             }
         ) {
             Class[] types = new Class [] {
@@ -165,6 +171,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
             jTable3.getColumnModel().getColumn(5).setMaxWidth(75);
         }
 
+        textKernel.setEditable(false);
         textKernel.setColumns(20);
         textKernel.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         textKernel.setRows(5);
