@@ -41,7 +41,6 @@ public class Assembler {
         code = code.replaceAll(",", " ");
         code = code.replaceAll(" +", " ");
         String[] elements = code.split(" ");
-        String s = elements[0];
         switch (elements[0]) {
             //I-type: 
             case "lw":
@@ -80,6 +79,7 @@ public class Assembler {
                 }
             case "sll":
                 if (elements.length == 4 && Resgisters.contains(elements[1]) && Resgisters.contains(elements[2])) {
+                    return 2;
                 }
                 else{
                     return -1;
@@ -145,8 +145,8 @@ public class Assembler {
         for(int i = 0 ; i< binaries.size() ; ++i){
             binary += binaries.get(i);
         }
-        int decimal=Integer.parseInt(binary,2);
-        String hexa = "0x" + Integer.toHexString(decimal);
+        Long decimal=Long.parseLong(binary,2);
+        String hexa = "0x" + Long.toHexString(decimal);
 
         return hexa;
     }
@@ -165,8 +165,9 @@ public class Assembler {
         if (i == 1) {   //I-type
             s.add(opCodes.get(code[0]));  //op
             if(code[0].equals("lw") || code[0].equals("sw")){
-                code[3].replaceAll(")", "");
-                String[] arr = code[3].split("(");
+                //code[2].replaceAll("\\)", "");
+                code[2] = code[2].substring(0,code[2].length()-1);
+                String[] arr = code[2].split("\\(");
                 s.add(binaryFromInt(Resgisters.indexOf(arr[1]) , 5));  //rs
                 s.add(binaryFromInt(Resgisters.indexOf(code[1]) , 5));  //rt
                 s.add(binaryFromInt(Integer.parseInt(arr[0]) , 16));  //immediate

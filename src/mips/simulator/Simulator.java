@@ -1,25 +1,30 @@
+package mips.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Simulator {
     Assembler AssemblerObject ;
     HashMap<String, Integer> Rejesters = new HashMap<>();   //rejesters and its values
-    HashMap<String, Integer> Memories = new HashMap<>();    //Used memories
-    int pointer = 0 ;
-    int maxPointer = AssemblerObject.Instructions.size();
+    HashMap<String, String> Memories = new HashMap<>();    //Used memories
+    ArrayList<Assembler.MachineSet> kernelSet = new ArrayList<>();
 
     public Simulator(Assembler obj){
         AssemblerObject = obj;
-        Rejesters.put("$0",   0);   Rejesters.put("$at", 0  );   Rejesters.put("$v0", 0);   Rejesters.put("$v1", 0);    Rejesters.put("$a0", 0);
-        Rejesters.put("$a1",  0);   Rejesters.put("$a2", 0  );   Rejesters.put("$a3", 0);   Rejesters.put("$t0", 0);    Rejesters.put("$t1", 0);
-        Rejesters.put("$t2",  0);   Rejesters.put("$t3", 0  );   Rejesters.put("$t4", 0 );  Rejesters.put("$t5", 0 );   Rejesters.put("$t6", 0);
-        Rejesters.put("$t7",  0);   Rejesters.put("$s0", 0  );   Rejesters.put("$s1", 0 );  Rejesters.put("$s2", 0 );   Rejesters.put("$s3", 0);
-        Rejesters.put("$s4",  0);   Rejesters.put("$s5", 0  );   Rejesters.put("$s6", 0 );  Rejesters.put("$s7", 0 );   Rejesters.put("$t8", 0);
-        Rejesters.put("$t9",  0);   Rejesters.put("$k0", 0  );   Rejesters.put("$k1", 0 );  Rejesters.put("$gp", 0 );   Rejesters.put("$sp", 0);
-        Rejesters.put("$fp",  0);   Rejesters.put("$ra", 0  );
+        //fill rejesters
+        clearRejesters();
+        //fill memories
+        /*text segment*/
+        int pos = 0;
+        for(int i=0 ; i<obj.sets.length ;++i){
+            Memories.put(obj.binaryFromInt(pos, 8), obj.sets[i]);
+            pos+=4;
+        }
+        //fill kernel set
+        kernelSet = kernel(obj);
     }
+    
     public ArrayList<Assembler.MachineSet> kernel(Assembler obj){
-        ArrayList<Assembler.MachineSet>ins = new ArrayList<Assembler.MachineSet>();
+        ArrayList<Assembler.MachineSet> ins = new ArrayList<Assembler.MachineSet>();
         for (int i=0; i<obj.Instructions.size(); i++){
             if(obj.Instructions.get(i).fields[0]=="beq"){///if beq
                int rs =  Rejesters.get(obj.Instructions.get(i).fields[1]);
@@ -112,5 +117,15 @@ public class Simulator {
         }
         return ins;
     }
-
+    
+    public void clearRejesters(){
+        Rejesters.clear();
+        Rejesters.put("$0",   0);   Rejesters.put("$at", 0  );   Rejesters.put("$v0", 0);   Rejesters.put("$v1", 0);    Rejesters.put("$a0", 0);
+        Rejesters.put("$a1",  0);   Rejesters.put("$a2", 0  );   Rejesters.put("$a3", 0);   Rejesters.put("$t0", 0);    Rejesters.put("$t1", 0);
+        Rejesters.put("$t2",  0);   Rejesters.put("$t3", 0  );   Rejesters.put("$t4", 0 );  Rejesters.put("$t5", 0 );   Rejesters.put("$t6", 0);
+        Rejesters.put("$t7",  0);   Rejesters.put("$s0", 0  );   Rejesters.put("$s1", 0 );  Rejesters.put("$s2", 0 );   Rejesters.put("$s3", 0);
+        Rejesters.put("$s4",  0);   Rejesters.put("$s5", 0  );   Rejesters.put("$s6", 0 );  Rejesters.put("$s7", 0 );   Rejesters.put("$t8", 0);
+        Rejesters.put("$t9",  0);   Rejesters.put("$k0", 0  );   Rejesters.put("$k1", 0 );  Rejesters.put("$gp", 0 );   Rejesters.put("$sp", 0);
+        Rejesters.put("$fp",  0);   Rejesters.put("$ra", 0  );
+    }
 }
