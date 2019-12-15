@@ -4,7 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/AssemblerGui.java</file>
-            <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/MIPSSimulator.java</file>
+            <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/SimulatorGUI.java</file>
+            <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/MIPSMain.java</file>
+            <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/Simulator.java</file>
             <file>file:/D:/Education/Java/MIPS-Simulator/src/mips/simulator/Assembler.java</file>
         </group>
     </open-files>

@@ -1,4 +1,5 @@
 package mips.simulator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,8 +17,10 @@ public class Simulator {
         /*text segment*/
         int pos = 0;
         for(int i=0 ; i<obj.sets.length ;++i){
-            Memories.put(obj.binaryFromInt(pos, 8), obj.sets[i]);
-            pos+=4;
+            if(!obj.sets[i].contains(":")){
+                Memories.put(obj.Decimalto8Hexa(pos), obj.sets[i]);
+                pos+=4;
+            }
         }
         //fill kernel set
         kernelSet = kernel(obj);
@@ -26,75 +29,66 @@ public class Simulator {
     public ArrayList<Assembler.MachineSet> kernel(Assembler obj){
         ArrayList<Assembler.MachineSet> ins = new ArrayList<Assembler.MachineSet>();
         for (int i=0; i<obj.Instructions.size(); i++){
-            if(obj.Instructions.get(i).fields[0]=="beq"){///if beq
+            if(obj.Instructions.get(i).fields[0].equals("beq")){///if beq
                int rs =  Rejesters.get(obj.Instructions.get(i).fields[1]);
                int rd =  Rejesters.get(obj.Instructions.get(i).fields[2]);
                 if (rs==rd){
                     if (obj.Labels.get(obj.Instructions.get(i).fields[3])>obj.Instructions.size())break;
                     else i = obj.Labels.get(obj.Instructions.get(i).fields[3])-1;
                 }
-            }else if (obj.Instructions.get(i).fields[0]=="bne"){///if bne
+            }else if (obj.Instructions.get(i).fields[0].equals("bne")){///if bne
                 int rs =  Rejesters.get(obj.Instructions.get(i).fields[1]);
                 int rd =  Rejesters.get(obj.Instructions.get(i).fields[2]);
                 if (rs!=rd){
                     if (obj.Labels.get(obj.Instructions.get(i).fields[3])>obj.Instructions.size())break;
                     else i = obj.Labels.get(obj.Instructions.get(i).fields[3])-1;
                 }
-            }else if(obj.Instructions.get(i).fields[0]=="j"){
+            }else if(obj.Instructions.get(i).fields[0].equals("j")){
                 if (obj.Labels.get(obj.Instructions.get(i).fields[1])>obj.Instructions.size())break;
                 else i = obj.Labels.get(obj.Instructions.get(i).fields[1])-1;
             }
             else{
-                if (obj.Instructions.get(i).fields[0]=="add"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("add")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1+tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="sub"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("sub")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1-tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="addi"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("addi")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Integer.parseInt(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1+tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="and"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("and")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1&tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="or"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("or")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1|tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="andi"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("andi")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Integer.parseInt(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1&tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="ori"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("ori")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Integer.parseInt(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1|tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="sll"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("sll")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Integer.parseInt(obj.Instructions.get(i).fields[3]);
                     Rejesters.put(obj.Instructions.get(i).fields[1],tmp1<<tmp2);
                 }
-                if (obj.Instructions.get(i).fields[0]=="slt"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("slt")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Rejesters.get(obj.Instructions.get(i).fields[3]);
                     if (tmp1<tmp2)
@@ -102,8 +96,7 @@ public class Simulator {
                     else
                     Rejesters.put(obj.Instructions.get(i).fields[1],0);
                 }
-                if (obj.Instructions.get(i).fields[0]=="slt"){
-                    ins.add(obj.Instructions.get(i));
+                if (obj.Instructions.get(i).fields[0].equals("slti")){
                     int tmp1 = Rejesters.get(obj.Instructions.get(i).fields[2]);
                     int tmp2 = Integer.parseInt(obj.Instructions.get(i).fields[3]);
                     if (tmp1<tmp2)
