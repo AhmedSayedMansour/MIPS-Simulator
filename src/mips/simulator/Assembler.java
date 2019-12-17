@@ -16,16 +16,18 @@ public class Assembler {
 
     public class MachineSet {
 
+        public String set;
         public Character type;
         public String hexaCode;
         public String[] fields ;
         ArrayList<String> Binary;
 
-        public MachineSet(Character type, String data, String hexa, ArrayList<String> bin) {
+        public MachineSet(String ins,Character type, String data, String hexa, ArrayList<String> bin) {
             this.type = type;
             fields = data.split(" ");
             hexaCode = hexa;
             Binary = bin;
+            set = ins;
         }
     }
 
@@ -109,25 +111,26 @@ public class Assembler {
         sets = full.split("\\n");
         String []code = full.split("\\n");
         for(int i=0; i < code.length;++i){
+            String INS = code[i];
             code[i] = code[i].replaceAll(",", " ");
             code[i] = code[i].replaceAll(" +", " ");
             if (checkValidation(code[i]) > 0) {
                 switch (checkValidation(code[i])) {
                     case 1:
-                        Instructions.add(new MachineSet('I', code[i], toHexa(toBinary(code[i].split(" "),1)), toBinary(code[i].split(" "),1)));
+                        Instructions.add(new MachineSet(INS,'I', code[i], toHexa(toBinary(code[i].split(" "),1)), toBinary(code[i].split(" "),1)));
                         break;
                     case 2:
-                        Instructions.add(new MachineSet('R', code[i], toHexa(toBinary(code[i].split(" "),2)), toBinary(code[i].split(" "),2)));
+                        Instructions.add(new MachineSet(INS,'R', code[i], toHexa(toBinary(code[i].split(" "),2)), toBinary(code[i].split(" "),2)));
                         break;
                     case 3:
-                        Instructions.add(new MachineSet('J', code[i], toHexa(toBinary(code[i].split(" "),3)), toBinary(code[i].split(" "),3)));
+                        Instructions.add(new MachineSet(INS,'J', code[i], toHexa(toBinary(code[i].split(" "),3)), toBinary(code[i].split(" "),3)));
                         break;
                 }
             }
             else if(checkValidation(code[i]) == 0){    //not a code may be label
                 if((!code[i].contains(" ")) && code[i].charAt(code[i].length()-1) == ':'){
                     Labels.put(code[i].substring(0, code[i].length()-1), i+1);
-                    Instructions.add(new MachineSet('L', code[i], "0x00000000", toBinary(code[i].split(" "),4)));
+                    Instructions.add(new MachineSet(INS,'L', code[i], "0x00000000", toBinary(code[i].split(" "),4)));
                 }
                 else{
                     return false;

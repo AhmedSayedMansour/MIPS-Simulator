@@ -5,6 +5,7 @@
  */
 package mips.simulator;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import static mips.simulator.AssemblerGui.obj;
 
@@ -21,27 +22,45 @@ public class SimulatorGUI extends javax.swing.JFrame {
         modelRegisters = (DefaultTableModel) tableRegisters.getModel();
         modelMemory = (DefaultTableModel) tableMemory.getModel();
         //fill Registers
-        updateRejisters();
+        updateRegisters();
         //fill Used Memories
-        for (String i : sim.Memories.keySet() ){
-            modelMemory.insertRow(tableMemory.getRowCount(), new Object[]{ i, sim.Memories.get(i), " "} );
-        }
-        //fill kernel segment
-        for (int i = 0; i<sim.kernelSet.size(); i++) {
-            String line = "";
-            for(int j=0 ; j<sim.kernelSet.get(i).fields.length ; j++)
-            {
-                line += sim.kernelSet.get(i).fields[j] + " ";
+        int pos = 0;
+        for(int i=0 ; i<obj.Instructions.size() ;++i){
+            if(!obj.Instructions.get(i).set.contains(":")){
+                modelMemory.insertRow(tableMemory.getRowCount(), new Object[]{ obj.Decimalto8Hexa(pos),obj.Instructions.get(i).set, obj.Instructions.get(i).hexaCode} );
+                //Memories.put(obj.Decimalto8Hexa(pos), obj.Instructions.get(i).set);
+                pos+=4;
             }
-            textKernel.setText( textKernel.getText() + line+ "\n");
+            userCode.setText(userCode.getText() + obj.Instructions.get(i).set + "\n");
+        }
+        //fill kernel text segment
+        for (int i = 0; i<sim.kernelSet.size(); i++) {
+            textKernel.setText( textKernel.getText() + sim.kernelSet.get(i).set+ "\n");
         }
     }
     
-    public void updateRejisters(){
+    public void updateMemories(){
+        modelMemory.setRowCount(0);
+        //User data segment
+        int pos = 0;
+        for(int i=0 ; i<obj.Instructions.size() ;++i){
+            if(!obj.Instructions.get(i).set.contains(":")){
+                modelMemory.insertRow(tableMemory.getRowCount(), new Object[]{ obj.Decimalto8Hexa(pos),obj.Instructions.get(i).set, obj.Instructions.get(i).hexaCode} );
+                //Memories.put(obj.Decimalto8Hexa(pos), obj.Instructions.get(i).set);
+                pos+=4;
+            }
+        }
+        //data memory
+        for(String i : sim.Memories.keySet()){
+            modelMemory.insertRow(tableMemory.getRowCount(), new Object[]{ i,sim.Memories.get(i), obj.Decimalto8Hexa(sim.Memories.get(i))} );
+        }
+    }
+    
+    public void updateRegisters(){
         modelRegisters.setRowCount(0);
         int count = 0;
-        for (String i : sim.Rejisters.keySet() ){
-            modelRegisters.insertRow(tableRegisters.getRowCount(), new Object[]{ count, i, Integer.toHexString(sim.Rejisters.get(i)) } );
+        for (String i : sim.Registers.keySet() ){
+            modelRegisters.insertRow(tableRegisters.getRowCount(), new Object[]{ count, i, Integer.toHexString(sim.Registers.get(i)) } );
             count++;
         }
     }
@@ -73,10 +92,15 @@ public class SimulatorGUI extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel5 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        currentIns = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        userCode = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Simulator");
 
         tableRegisters.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -209,12 +233,25 @@ public class SimulatorGUI extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel5.setText("Current execution instruction");
 
+        currentIns.setEditable(false);
+
         jButton3.setText("Clear Rejesters");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
+
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jLabel6.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel6.setText("User Text Segment");
+
+        userCode.setEditable(false);
+        userCode.setColumns(20);
+        userCode.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        userCode.setRows(5);
+        jScrollPane5.setViewportView(userCode);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -230,7 +267,6 @@ public class SimulatorGUI extends javax.swing.JFrame {
                         .addComponent(jButton3)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -240,7 +276,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(executeCurrent)))
                             .addComponent(jLabel5)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(currentIns, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -249,16 +285,23 @@ public class SimulatorGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(counter, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 6, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(11, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(83, 83, 83)
                 .addComponent(jLabel2)
                 .addGap(148, 148, 148)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(201, 201, 201)
                 .addComponent(jLabel4)
-                .addGap(142, 142, 142))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel6)
+                .addGap(91, 91, 91))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,9 +310,14 @@ public class SimulatorGUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -289,13 +337,12 @@ public class SimulatorGUI extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(currentIns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(12, 12, 12)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -316,26 +363,36 @@ public class SimulatorGUI extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        sim.clearRejisters();
-        updateRejisters();
+        sim.clearRegisters();
+        updateRegisters();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void executeCurrentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeCurrentActionPerformed
         // TODO add your handling code here:
+        if(programCounter == sim.kernelSet.size()){
+            JOptionPane.showMessageDialog(null, "Program already fully executed");
+            return;
+        }
         sim.runInstruction(sim.kernelSet.get(programCounter));
         programCounter++;
         counter.setText(Integer.toString(programCounter));
-        updateRejisters();
+        updateRegisters();
+        updateMemories();
+        currentIns.setText(sim.kernelSet.get(programCounter-1).set);
     }//GEN-LAST:event_executeCurrentActionPerformed
 
     private void executeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeAllActionPerformed
         // TODO add your handling code here:
+        sim.clearMemories();
+        sim.clearRegisters();
         for(int i=0 ; i<sim.kernelSet.size(); ++i){
-            sim.runInstruction(sim.kernelSet.get(programCounter));
+            sim.runInstruction(sim.kernelSet.get(i));
         }
         programCounter = sim.kernelSet.size();
         counter.setText(Integer.toString(programCounter));
-        updateRejisters();
+        updateRegisters();
+        updateMemories();
+        currentIns.setText(sim.kernelSet.get(sim.kernelSet.size()-1).set);
     }//GEN-LAST:event_executeAllActionPerformed
 
     /**
@@ -376,6 +433,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField counter;
+    private javax.swing.JTextField currentIns;
     private javax.swing.JButton executeAll;
     private javax.swing.JButton executeCurrent;
     private javax.swing.JButton jButton3;
@@ -384,16 +442,19 @@ public class SimulatorGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTable3;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTable tableMemory;
     private javax.swing.JTable tableRegisters;
     private javax.swing.JTextArea textKernel;
+    private javax.swing.JTextArea userCode;
     // End of variables declaration//GEN-END:variables
 }
