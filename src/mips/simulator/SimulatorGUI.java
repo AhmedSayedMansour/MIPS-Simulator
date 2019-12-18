@@ -5,6 +5,7 @@
  */
 package mips.simulator;
 
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import static mips.simulator.AssemblerGui.obj;
@@ -16,11 +17,13 @@ public class SimulatorGUI extends javax.swing.JFrame {
     Simulator sim = new Simulator(obj);
     DefaultTableModel modelRegisters;
     DefaultTableModel modelMemory;
+    DefaultTableModel modelInf;
     
     public SimulatorGUI() {
         initComponents();
         modelRegisters = (DefaultTableModel) tableRegisters.getModel();
         modelMemory = (DefaultTableModel) tableMemory.getModel();
+        modelInf = (DefaultTableModel) tableInf.getModel();
         //fill Registers
         updateRegisters();
         //fill Used Memories
@@ -36,6 +39,22 @@ public class SimulatorGUI extends javax.swing.JFrame {
         //fill kernel text segment
         for (int i = 0; i<sim.kernelSet.size(); i++) {
             textKernel.setText( textKernel.getText() + sim.kernelSet.get(i).set+ "\n");
+        }
+    }
+    
+    public void fillBinaryInf(){
+        //op rs rt rd shamt funct imm addr
+        char type = obj.Instructions.get(programCounter-1).type;
+        ArrayList<String> bin = obj.Instructions.get(programCounter-1).Binary;
+        modelInf.setRowCount(0);
+        if(type == 'R'){
+            modelInf.insertRow(tableInf.getRowCount(), new Object[]{ bin.get(0), bin.get(1), bin.get(2), bin.get(3), bin.get(4), bin.get(5), "", ""});
+        }
+        else if(type == 'I'){
+            modelInf.insertRow(tableInf.getRowCount(), new Object[]{ bin.get(0), bin.get(1), bin.get(2), "", "", "", bin.get(3), ""});
+        }
+        else if(type == 'J'){
+            modelInf.insertRow(tableInf.getRowCount(), new Object[]{ bin.get(0), "", "", "", "", "", "", bin.get(1)});
         }
     }
     
@@ -80,7 +99,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tableMemory = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tableInf = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
         textKernel = new javax.swing.JTextArea();
         executeCurrent = new javax.swing.JButton();
@@ -163,19 +182,19 @@ public class SimulatorGUI extends javax.swing.JFrame {
             tableMemory.getColumnModel().getColumn(2).setResizable(false);
         }
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tableInf.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "op", "rs", "rt", "rd", "funcet", "imm", "addr"
+                "op", "rs", "rt", "rd", "shamt", "funct", "imm", "addr"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -186,15 +205,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setMaxWidth(50);
-            jTable3.getColumnModel().getColumn(1).setMaxWidth(50);
-            jTable3.getColumnModel().getColumn(2).setMaxWidth(50);
-            jTable3.getColumnModel().getColumn(3).setMaxWidth(50);
-            jTable3.getColumnModel().getColumn(4).setMaxWidth(60);
-            jTable3.getColumnModel().getColumn(5).setMaxWidth(75);
-        }
+        jScrollPane3.setViewportView(tableInf);
 
         textKernel.setEditable(false);
         textKernel.setColumns(20);
@@ -235,7 +246,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
 
         currentIns.setEditable(false);
 
-        jButton3.setText("Clear Rejesters");
+        jButton3.setText("Clear Registers");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -379,6 +390,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
         updateRegisters();
         updateMemories();
         currentIns.setText(sim.kernelSet.get(programCounter-1).set);
+        fillBinaryInf();
     }//GEN-LAST:event_executeCurrentActionPerformed
 
     private void executeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeAllActionPerformed
@@ -393,6 +405,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
         updateRegisters();
         updateMemories();
         currentIns.setText(sim.kernelSet.get(sim.kernelSet.size()-1).set);
+        fillBinaryInf();
     }//GEN-LAST:event_executeAllActionPerformed
 
     /**
@@ -451,7 +464,7 @@ public class SimulatorGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTable jTable3;
+    private javax.swing.JTable tableInf;
     private javax.swing.JTable tableMemory;
     private javax.swing.JTable tableRegisters;
     private javax.swing.JTextArea textKernel;

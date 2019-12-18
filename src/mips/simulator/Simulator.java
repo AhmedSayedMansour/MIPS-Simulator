@@ -78,7 +78,7 @@ public class Simulator {
                 arr[1] = arr[1].substring(0, arr[1].length()-1);
                 int addr = Integer.parseInt(arr[0])+ Registers.get(arr[1]);
                 if(Memories.containsKey(AssemblerObject.Decimalto8Hexa(addr+4096))){
-                    Registers.replace(ins.fields[1], Memories.get(AssemblerObject.Decimalto8Hexa(addr)));
+                    Registers.replace(ins.fields[1], Memories.get(AssemblerObject.Decimalto8Hexa(addr+4096)));
                 }
                 else{
                     Registers.replace(ins.fields[1], 0);
@@ -126,8 +126,8 @@ public class Simulator {
             case "slti":    //Set on less than immediate
                 Registers.replace(ins.fields[1], Registers.get(ins.fields[2])< Integer.parseInt(ins.fields[3]) ? 1 : 0);
                 break;
-            case "lui":     //Load upper immediate
-                
+            case "lui":     //Load upper immediate (immediate<<16)
+                Registers.replace(ins.fields[1], Integer.parseInt(ins.fields[2])<<16 );
                 break;
         }
     }
