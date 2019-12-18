@@ -118,7 +118,7 @@ public class Simulator {
                 Registers.replace(ins.fields[1], Registers.get(ins.fields[2])| Integer.parseInt(ins.fields[3]));
                 break;
             case "sll":     //Shift left logical "<<"
-                Registers.replace(ins.fields[1], Registers.get(ins.fields[2])<< Registers.get(ins.fields[3]));
+                Registers.replace(ins.fields[1], Registers.get(ins.fields[2])<< Integer.parseInt(ins.fields[3]));
                 break;
             case "slt":     //Set on less than
                 Registers.replace(ins.fields[1], Registers.get(ins.fields[2])< Registers.get(ins.fields[3]) ? 1 : 0);
